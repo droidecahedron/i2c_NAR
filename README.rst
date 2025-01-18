@@ -22,6 +22,9 @@ interrupt handling.
 
 For simplicity and low latency sample is not using more sophisticated IPM protocols.
 
+# This also enables I2C0 on the net core. This means you can't use UART0 on the net core, so you must use RTT Logging to view the netcore logs, but you can continue to use a UART for the app core logs.
+
+
 Building the application for nrf5340dk/nrf5340/cpuapp
 *****************************************************
 
@@ -55,22 +58,28 @@ When you reset the development kit, the following messages (one for master and o
    [00:00:00.657,012] <inf> main: IPC send at 21529 ticks
    [00:00:00.707,031] <inf> main: IPC send at 23168 ticks
    [00:00:00.757,049] <inf> main: IPC send at 24807 ticks
+   [00:00:01.253,723] <inf> main: cpuapp main task
+   [00:00:02.253,784] <inf> main: cpuapp main task
+   [00:00:03.253,936] <inf> main: cpuapp main task
 
 
 .. code-block:: console
 
-   *** Booting Zephyr OS build v2.7.0-rc1-89-ge755863d66c9  ***
-   [00:00:00.054,534] <inf> main: Local timestamp: 1787, application core timestamp: 10056
-   [00:00:00.104,553] <inf> main: Local timestamp: 3426, application core timestamp: 11695
-   [00:00:00.154,571] <inf> main: Local timestamp: 5065, application core timestamp: 13334
-   [00:00:00.204,589] <inf> main: Local timestamp: 6704, application core timestamp: 14973
-   [00:00:00.254,608] <inf> main: Local timestamp: 8343, application core timestamp: 16612
-   [00:00:00.514,892] <inf> sync_rtc: Updated timestamp to synchronized RTC by 8270 ticks (252380us)
-   [00:00:00.557,006] <inf> main: Local timestamp: 18252, application core timestamp: 18251
-   [00:00:00.607,025] <inf> main: Local timestamp: 19891, application core timestamp: 19890
-   [00:00:00.657,043] <inf> main: Local timestamp: 21530, application core timestamp: 21529
-   [00:00:00.707,061] <inf> main: Local timestamp: 23169, application core timestamp: 23168
-   [00:00:00.757,080] <inf> main: Local timestamp: 24807, application core timestamp: 24807
+   *** Booting nRF Connect SDK v2.9.0-7787b2649840 ***
+   *** Using Zephyr OS v3.7.99-1f8f3dc29142 ***
+   [00:00:00.000,640] <inf> net: Synchronization using mbox driver
+   [00:00:00.000,671] <inf> net: i2c bus i2c@41013000 ready!
+   [00:00:00.000,671] <inf> net: Netcore task, i2c device ready
+   [00:00:00.048,980] <inf> net: Local timestamp: 1589, application core timestamp: 9951
+   [00:00:00.098,999] <inf> net: Local timestamp: 3228, application core timestamp: 11590
+   [00:00:00.149,017] <inf> net: Local timestamp: 4867, application core timestamp: 13229
+   [00:00:00.199,035] <inf> net: Local timestamp: 6506, application core timestamp: 14868
+   [00:00:00.249,053] <inf> net: Local timestamp: 8145, application core timestamp: 16507
+   [00:00:00.519,744] <inf> sync_rtc: Updated timestamp to synchronized RTC by 8347 ticks (254730us)
+   [00:00:00.553,802] <inf> net: Local timestamp: 18147, application core timestamp: 18146
+   [00:00:08.256,469] <inf> net: Netcore task, i2c device ready
+   [00:00:09.256,561] <inf> net: Netcore task, i2c device ready
+   [00:00:10.256,652] <inf> net: Netcore task, i2c device ready
 
 Observe that initially logging timestamps for the corresponding events on both cores
 do not match. Same with local and remote timestamps reported on network core. After
