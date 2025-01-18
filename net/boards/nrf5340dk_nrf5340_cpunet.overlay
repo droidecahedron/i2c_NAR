@@ -1,0 +1,13 @@
+&uart0 {
+    status="disabled";
+};
+
+&i2c0 {
+    compatible = "nordic,nrf-twim";
+	status = "okay";
+    mysensor: mysensor@4a{
+        compatible = "i2c-device";
+        reg = < 0x4a >;
+        label = "MYSENSOR";
+    };
+};
