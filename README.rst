@@ -24,6 +24,8 @@ For simplicity and low latency sample is not using more sophisticated IPM protoc
 
 # This also enables I2C0 on the net core. This means you can't use UART0 on the net core, so you must use RTT Logging to view the netcore logs, but you can continue to use a UART for the app core logs.
 
+## This sample also utilizes multiple IPC channels. Channel 2 is used for the RTC sync. Channel 4 is used to send data from appcore to netcore containing `0xDEADBEEF++`. Channel 6 is used to send data from the netcore to the appcore containing `0xBADF00D++`.
+### So there is a mailbox set up in both cores in this case.
 
 Building the application for nrf5340dk/nrf5340/cpuapp
 *****************************************************
@@ -48,19 +50,49 @@ When you reset the development kit, the following messages (one for master and o
 .. code-block:: console
 
    *** Booting Zephyr OS build v2.7.0-rc1-89-ge755863d66c9  ***
-   [00:00:00.306,915] <inf> main: IPC send at 10056 ticks
-   [00:00:00.356,903] <inf> main: IPC send at 11695 ticks
-   [00:00:00.406,921] <inf> main: IPC send at 13334 ticks
-   [00:00:00.456,939] <inf> main: IPC send at 14973 ticks
-   [00:00:00.506,958] <inf> main: IPC send at 16612 ticks
-   [00:00:00.556,976] <inf> main: IPC send at 18251 ticks
-   [00:00:00.606,994] <inf> main: IPC send at 19890 ticks
-   [00:00:00.657,012] <inf> main: IPC send at 21529 ticks
-   [00:00:00.707,031] <inf> main: IPC send at 23168 ticks
-   [00:00:00.757,049] <inf> main: IPC send at 24807 ticks
-   [00:00:01.253,723] <inf> main: cpuapp main task
-   [00:00:02.253,784] <inf> main: cpuapp main task
-   [00:00:03.253,936] <inf> main: cpuapp main task
+   *** Booting nRF Connect SDK v2.9.0-7787b2649840 ***
+   *** Using Zephyr OS v3.7.99-1f8f3dc29142 ***
+   [00:00:00.253,631] <inf> main: Synchronization using mbox driver
+   [00:00:00.253,662] <inf> main: cpuapp main task
+   [00:00:00.303,710] <inf> main: IPC send at 9951 ticks
+   [00:00:00.353,698] <inf> main: IPC send at 11590 ticks
+   [00:00:00.403,747] <inf> main: IPC send at 13229 ticks
+   [00:00:00.453,765] <inf> main: IPC send at 14868 ticks
+   [00:00:00.503,784] <inf> main: IPC send at 16507 ticks
+   [00:00:00.553,771] <inf> main: IPC send at 18146 ticks
+   [00:00:00.603,820] <inf> main: IPC send at 19785 ticks
+   [00:00:00.653,839] <inf> main: IPC send at 21424 ticks
+   [00:00:00.703,857] <inf> main: IPC send at 23063 ticks
+   [00:00:00.753,875] <inf> main: IPC send at 24702 ticks
+   [00:00:00.803,863] <inf> main: IPC send at 26341 ticks
+   [00:00:00.853,942] <inf> main: IPC send at 27980 ticks
+   [00:00:00.903,900] <inf> main: IPC send at 29619 ticks
+   [00:00:00.953,948] <inf> main: IPC send at 31258 ticks
+   [00:00:01.003,967] <inf> main: IPC send at 32897 ticks
+   [00:00:01.253,753] <inf> main: app IPC send deadbeef
+   [00:00:01.253,753] <inf> main: cpuapp main task
+   [00:00:01.255,523] <inf> main: received data from netcore, size 7897 on channel 6
+   [00:00:01.255,523] <inf> main: msg: badf00d
+   [00:00:02.253,845] <inf> main: app IPC send deadbef0
+   [00:00:02.253,875] <inf> main: cpuapp main task
+   [00:00:02.255,645] <inf> main: received data from netcore, size 7897 on channel 6
+   [00:00:02.255,645] <inf> main: msg: badf00e
+   [00:00:03.253,997] <inf> main: app IPC send deadbef1
+   [00:00:03.253,997] <inf> main: cpuapp main task
+   [00:00:03.255,737] <inf> main: received data from netcore, size 7897 on channel 6
+   [00:00:03.255,737] <inf> main: msg: badf00f
+   [00:00:04.254,058] <inf> main: app IPC send deadbef2
+   [00:00:04.254,089] <inf> main: cpuapp main task
+   [00:00:04.255,920] <inf> main: received data from netcore, size 7897 on channel 6
+   [00:00:04.255,920] <inf> main: msg: badf010
+   [00:00:05.254,211] <inf> main: app IPC send deadbef3
+   [00:00:05.254,211] <inf> main: cpuapp main task
+   [00:00:05.256,011] <inf> main: received data from netcore, size 7897 on channel 6
+   [00:00:05.256,011] <inf> main: msg: badf011
+   [00:00:06.254,272] <inf> main: app IPC send deadbef4
+   [00:00:06.254,302] <inf> main: cpuapp main task
+   [00:00:06.256,103] <inf> main: received data from netcore, size 7897 on channel 6
+   [00:00:06.256,103] <inf> main: msg: badf012
 
 
 .. code-block:: console
@@ -70,16 +102,31 @@ When you reset the development kit, the following messages (one for master and o
    [00:00:00.000,640] <inf> net: Synchronization using mbox driver
    [00:00:00.000,671] <inf> net: i2c bus i2c@41013000 ready!
    [00:00:00.000,671] <inf> net: Netcore task, i2c device ready
-   [00:00:00.048,980] <inf> net: Local timestamp: 1589, application core timestamp: 9951
-   [00:00:00.098,999] <inf> net: Local timestamp: 3228, application core timestamp: 11590
-   [00:00:00.149,017] <inf> net: Local timestamp: 4867, application core timestamp: 13229
-   [00:00:00.199,035] <inf> net: Local timestamp: 6506, application core timestamp: 14868
-   [00:00:00.249,053] <inf> net: Local timestamp: 8145, application core timestamp: 16507
-   [00:00:00.519,744] <inf> sync_rtc: Updated timestamp to synchronized RTC by 8347 ticks (254730us)
-   [00:00:00.553,802] <inf> net: Local timestamp: 18147, application core timestamp: 18146
-   [00:00:08.256,469] <inf> net: Netcore task, i2c device ready
-   [00:00:09.256,561] <inf> net: Netcore task, i2c device ready
-   [00:00:10.256,652] <inf> net: Netcore task, i2c device ready
+   [00:00:00.048,980] <inf> net: Local timestamp: 1589, application core timestamp: 16235
+   [00:00:00.098,999] <inf> net: Local timestamp: 3228, application core timestamp: 17874
+   [00:00:00.149,017] <inf> net: Local timestamp: 4867, application core timestamp: 19513
+   [00:00:00.199,035] <inf> net: Local timestamp: 6506, application core timestamp: 21152
+   [00:00:00.249,053] <inf> net: Local timestamp: 8145, application core timestamp: 22791
+   [00:00:00.299,072] <inf> net: Local timestamp: 9784, application core timestamp: 24430
+   [00:00:00.349,090] <inf> net: Local timestamp: 11423, application core timestamp: 26069
+   [00:00:14.446,929] <inf> net: received data from appcore, size 7897 on channel 4
+   [00:00:14.446,929] <inf> net: msg: deadbefc
+   [00:00:14.448,852] <inf> net: IPC send badf01a
+   [00:00:14.448,852] <inf> net: Netcore task, i2c device ready
+   [00:00:15.447,021] <inf> net: received data from appcore, size 7897 on channel 4
+   [00:00:15.447,021] <inf> net: msg: deadbefd
+   [00:00:15.448,913] <inf> net: IPC send badf01b
+   [00:00:15.448,944] <inf> net: Netcore task, i2c device ready
+   [00:00:16.447,082] <inf> net: received data from appcore, size 7897 on channel 4
+   [00:00:16.447,082] <inf> net: msg: deadbefe
+   [00:00:16.449,096] <inf> net: IPC send badf01c
+   [00:00:16.449,127] <inf> net: Netcore task, i2c device ready
+   [00:00:17.447,204] <inf> net: received data from appcore, size 7897 on channel 4
+   [00:00:17.447,235] <inf> net: msg: deadbeff
+   [00:00:17.449,188] <inf> net: IPC send badf01d
+   [00:00:17.449,218] <inf> net: Netcore task, i2c device ready
+   [00:00:18.447,265] <inf> net: received data from appcore, size 7897 on channel 4
+   [00:00:18.447,265] <inf> net: msg: deadbf00
 
 Observe that initially logging timestamps for the corresponding events on both cores
 do not match. Same with local and remote timestamps reported on network core. After
